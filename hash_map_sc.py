@@ -52,28 +52,38 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        j = 0
+        for i in key:
+            j += ord(i)
+        new_bucket = j % self._capacity
+
+        insert_node = self._buckets[new_bucket]
+
+        insert_node.insert(key, value)
+
+        self._size += 1
+
+
 
     def empty_buckets(self) -> int:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        num_empty = 0
+        for bucket in range(self._buckets.length()):
+            if self._buckets[bucket].length() == 0:
+                num_empty += 1
+        return num_empty
+
+
 
     def table_load(self) -> float:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        load_factor = self._size / self._capacity
+        return load_factor
 
     def clear(self) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        for bucket in range(self._buckets.length()):
+            if self._buckets[bucket].length() != 0:
+                self._buckets[bucket] = LinkedList()
+                self._size -= 1
+
 
     def resize_table(self, new_capacity: int) -> None:
         """

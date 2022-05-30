@@ -52,18 +52,23 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-        """
-        TODO: Write this implementation
-        """
-        # remember, if the load factor is greater than or equal to 0.5,
-        # resize the table before putting the new key/value pair
-        pass
+
+        if self.table_load() >= 0.5:
+            self.resize_table(self._capacity * 2)
+
+        bucket_index = self._hash_function(key) % self._capacity
+        placer = self._buckets[bucket_index]
+        if placer is None or placer.is_tombstone():
+            placer = HashEntry(key, value)
+        else:
+
+
+
+
+
 
     def table_load(self) -> float:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        return self._size / self._capacity
 
     def empty_buckets(self) -> int:
         """
@@ -72,11 +77,19 @@ class HashMap:
         pass
 
     def resize_table(self, new_capacity: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        # remember to rehash non-deleted entries into new table
-        pass
+        if new_capacity < 1 or new_capacity < self._size:
+            return
+
+        old_buckets = self._buckets
+
+        new_map = HashMap(new_capacity, self._hash_function)
+
+        for bucket in range(old_buckets.length()):
+            bucket_index = self._hash_function(old_buckets[bucket].key) % new_capacity
+            new_map[bucket_index] = HashEntry(old_buckets[bucket].key, old_buckets[bucket].value)
+
+        self._buckets = new_map._buckets
+        self._capacity = new_capacity
 
     def get(self, key: str) -> object:
         """

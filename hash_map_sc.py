@@ -70,8 +70,7 @@ class HashMap:
         return num_empty
 
     def table_load(self) -> float:
-        load_factor = self._size / self._capacity
-        return load_factor
+        return self._size / self._capacity
 
     def clear(self) -> None:
         for bucket in range(self._buckets.length()):

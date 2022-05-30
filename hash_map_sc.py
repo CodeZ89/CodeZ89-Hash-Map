@@ -95,31 +95,33 @@ class HashMap:
                     new_map.put(current_node.key, current_node.value)
                     current_node = current_node.next
 
-
-
-
-
-
-
-
-
     def get(self, key: str) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        bucket_index = self._hash_function(key) % self._capacity
+        target = self._buckets[bucket_index].contains(key)
+        if target:
+            return target.value
+        else:
+            return None
+
 
     def contains_key(self, key: str) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        bucket_index = self._hash_function(key) % self._capacity
+        target = self._buckets[bucket_index].contains(key)
+
+        if target:
+            return True
+        else:
+            return False
 
     def remove(self, key: str) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        bucket_index = self._hash_function(key) % self._capacity
+        target = self._buckets[bucket_index].contains(key)
+
+        if target:
+            self._buckets[bucket_index].remove(key)
+        else:
+            return
+
 
     def get_keys(self) -> DynamicArray:
         """

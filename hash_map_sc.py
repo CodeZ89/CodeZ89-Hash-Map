@@ -52,14 +52,15 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-        j = 0
-        for i in key:
-            j += ord(i)
-        new_bucket = j % self._capacity
+        new_bucket = self._hash_function(key) % self._capacity
 
-        insert_node = self._buckets[new_bucket]
-
-        insert_node.insert(key, value)
+        if self._buckets[new_bucket].length() == 0:
+            insert_node = self._buckets[new_bucket]
+            insert_node.insert(key, value)
+        else:
+            self._buckets[new_bucket].remove(key)
+            self._size -= 1
+            self._buckets[new_bucket].insert(key, value)
 
         self._size += 1
 

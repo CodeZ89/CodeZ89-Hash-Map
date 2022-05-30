@@ -77,7 +77,7 @@ class HashMap:
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket].length() != 0:
                 self._buckets[bucket] = LinkedList()
-                self._size -= 1
+        self._size = 0
 
     def resize_table(self, new_capacity: int) -> None:
         if new_capacity < 1:

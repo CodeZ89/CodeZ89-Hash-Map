@@ -95,6 +95,11 @@ class HashMap:
                     new_map.put(current_node.key, current_node.value)
                     current_node = current_node.next
 
+        self._buckets = new_map._buckets
+        self._capacity = new_capacity
+
+
+
     def get(self, key: str) -> object:
         bucket_index = self._hash_function(key) % self._capacity
         target = self._buckets[bucket_index].contains(key)
@@ -119,15 +124,23 @@ class HashMap:
 
         if target:
             self._buckets[bucket_index].remove(key)
+            self._size -= 1
         else:
             return
 
 
     def get_keys(self) -> DynamicArray:
-        """
-        TODO: Write this implementation
-        """
-        pass
+
+        key_array = DynamicArray()
+
+        for bucket in range(self._buckets.length()):
+            if self._buckets[bucket].length() != 0:
+                iterator = self._buckets[bucket].__iter__()
+                current_node = iterator.__next__()
+                while current_node is not None:
+                    key_array.append(current_node.key)
+                    current_node = current_node.next
+        return key_array
 
 
 def find_mode(da: DynamicArray) -> (DynamicArray, int):

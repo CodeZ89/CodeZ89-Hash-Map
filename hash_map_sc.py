@@ -62,24 +62,12 @@ class HashMap:
             self._buckets[bucket_index].insert(key, value)
             self._size += 1
 
-
-
-
-
-
-
-
-
-
-
     def empty_buckets(self) -> int:
         num_empty = 0
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket].length() == 0:
                 num_empty += 1
         return num_empty
-
-
 
     def table_load(self) -> float:
         load_factor = self._size / self._capacity
@@ -91,12 +79,29 @@ class HashMap:
                 self._buckets[bucket] = LinkedList()
                 self._size -= 1
 
-
     def resize_table(self, new_capacity: int) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        if new_capacity < 1:
+            return
+
+        old_map = self._buckets
+
+        new_map = HashMap(new_capacity, self._hash_function)
+
+        for bucket in range(old_map.length()):
+            if old_map[bucket].length() != 0:
+                iterator = old_map[bucket].__iter__()
+                current_node = iterator.__next__()
+                while current_node is not None:
+                    new_map.put(current_node.key, current_node.value)
+                    current_node = current_node.next
+
+
+
+
+
+
+
+
 
     def get(self, key: str) -> object:
         """

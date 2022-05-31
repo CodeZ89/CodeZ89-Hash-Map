@@ -103,7 +103,7 @@ class HashMap:
                 if self._buckets[bucket].is_tombstone:
                     return
                 else:
-                    return self._buckets[bucket]
+                    return self._buckets[bucket].value
 
 
     def contains_key(self, key: str) -> bool:
@@ -115,10 +115,12 @@ class HashMap:
         return False
 
     def remove(self, key: str) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        for bucket in range(self._buckets.length()):
+            if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
+                self._buckets[bucket].is_tombstone = True
+                return
+
+
 
     def clear(self) -> None:
         new_map = HashMap(self._capacity, self._hash_function)

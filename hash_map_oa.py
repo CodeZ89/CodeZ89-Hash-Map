@@ -92,8 +92,7 @@ class HashMap:
             if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
                 new_map._buckets[bucket] = None
             else:
-                bucket_index = self._hash_function(old_buckets[bucket].key) % new_capacity
-                new_map._buckets[bucket_index] = HashEntry(old_buckets[bucket].key, old_buckets[bucket].value)
+                new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)
 
         self._buckets = new_map._buckets
         self._capacity = new_capacity

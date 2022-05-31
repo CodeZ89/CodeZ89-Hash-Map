@@ -55,8 +55,8 @@ class HashMap:
 
         if self.table_load() >= 0.5:
             self.resize_table(self._capacity * 2)
-
         bucket_index = self._hash_function(key) % self._capacity
+        new_index = self._hash_function(key) % self._capacity
         placer = self._buckets[bucket_index]
         new_spot = 0
 
@@ -67,9 +67,10 @@ class HashMap:
                 placer.value = value
                 return
             new_spot += 1
-            placer = self._buckets[(bucket_index + new_spot**2) % self._capacity]
+            new_index = (bucket_index + new_spot**2) % self._capacity
+            placer = self._buckets[new_index]
 
-        self._buckets[bucket_index] = HashEntry(key, value)
+        self._buckets[new_index] = HashEntry(key, value)
         self._size += 1
 
 

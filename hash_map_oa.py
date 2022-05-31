@@ -58,26 +58,30 @@ class HashMap:
 
         bucket_index = self._hash_function(key) % self._capacity
         placer = self._buckets[bucket_index]
-        if placer is None or placer.is_tombstone():
-            placer = HashEntry(key, value)
-        else:
+        new_spot = 0
 
+        while placer:
+            if placer.is_tombstone:
+                break
+            if placer.key == key:
+                placer.value = value
+                return
+            new_spot += 1
+            bucket_index = (bucket_index + new_spot**2) % self._capacity
+            placer = self._buckets[bucket_index]
 
-
-
+        self._buckets[bucket_index] = HashEntry(key, value)
+        self._size += 1
 
 
     def table_load(self) -> float:
         return self._size / self._capacity
 
     def empty_buckets(self) -> int:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        return self._capacity - self._size
 
     def resize_table(self, new_capacity: int) -> None:
-        if new_capacity < 1 or new_capacity < self._size:
+        if new_capacity < 1 or new_capacity < self._capacity:
             return
 
         old_buckets = self._buckets
@@ -85,23 +89,31 @@ class HashMap:
         new_map = HashMap(new_capacity, self._hash_function)
 
         for bucket in range(old_buckets.length()):
-            bucket_index = self._hash_function(old_buckets[bucket].key) % new_capacity
-            new_map[bucket_index] = HashEntry(old_buckets[bucket].key, old_buckets[bucket].value)
+            if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
+                new_map._buckets[bucket] = None
+            else:
+                bucket_index = self._hash_function(old_buckets[bucket].key) % new_capacity
+                new_map._buckets[bucket_index] = HashEntry(old_buckets[bucket].key, old_buckets[bucket].value)
 
         self._buckets = new_map._buckets
         self._capacity = new_capacity
 
     def get(self, key: str) -> object:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        for bucket in range(self._buckets.length()):
+            if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
+                if self._buckets[bucket].is_tombstone:
+                    return
+                else:
+                    return self._buckets[bucket]
+
 
     def contains_key(self, key: str) -> bool:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        for bucket in range(self._buckets.length()):
+            bucket_key = self._buckets[bucket]
+            if bucket_key is not None and bucket_key.key == key:
+                return True
+
+        return False
 
     def remove(self, key: str) -> None:
         """
@@ -110,10 +122,9 @@ class HashMap:
         pass
 
     def clear(self) -> None:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        new_map = HashMap(self._capacity, self._hash_function)
+        self._buckets = new_map._buckets
+        self._size = 0
 
     def get_keys(self) -> DynamicArray:
         """

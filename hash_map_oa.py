@@ -67,8 +67,7 @@ class HashMap:
                 placer.value = value
                 return
             new_spot += 1
-            bucket_index = (bucket_index + new_spot**2) % self._capacity
-            placer = self._buckets[bucket_index]
+            placer = self._buckets[(bucket_index + new_spot**2) % self._capacity]
 
         self._buckets[bucket_index] = HashEntry(key, value)
         self._size += 1

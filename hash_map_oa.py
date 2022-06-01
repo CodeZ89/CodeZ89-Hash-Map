@@ -53,9 +53,8 @@ class HashMap:
 
     def put(self, key: str, value: object) -> None:
 
-        while self.table_load() >= 0.5:
+        if self.table_load() >= 0.5:
             self.resize_table(self._capacity * 2)
-
 
         bucket_index = self._hash_function(key) % self._capacity
         new_index = self._hash_function(key) % self._capacity
@@ -119,9 +118,10 @@ class HashMap:
     def remove(self, key: str) -> None:
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
+                self._buckets[bucket].key = None
+                self._buckets[bucket].value = None
                 self._buckets[bucket].is_tombstone = True
                 self._size -= 1
-                return
 
 
 
@@ -131,10 +131,13 @@ class HashMap:
         self._size = 0
 
     def get_keys(self) -> DynamicArray:
-        """
-        TODO: Write this implementation
-        """
-        pass
+        key_array = DynamicArray()
+        for bucket in range(self._buckets.length()):
+            if self._buckets[bucket] is not None and not self._buckets[bucket].is_tombstone:
+                key_array.append(self._buckets[bucket].key)
+
+        return key_array
+
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #

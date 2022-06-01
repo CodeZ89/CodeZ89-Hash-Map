@@ -81,7 +81,7 @@ class HashMap:
         return self._capacity - self._size
 
     def resize_table(self, new_capacity: int) -> None:
-        if new_capacity < 1 or new_capacity < self._capacity:
+        if new_capacity < 1 or new_capacity < self._size:
             return
 
         old_buckets = self._buckets
@@ -90,7 +90,7 @@ class HashMap:
 
         for bucket in range(old_buckets.length()):
             if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
-                new_map._buckets[bucket] = None
+                break
             else:
                 new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)
 

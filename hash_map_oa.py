@@ -90,7 +90,7 @@ class HashMap:
 
         for bucket in range(old_buckets.length()):
             if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
-                break
+                continue
             else:
                 new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)
 

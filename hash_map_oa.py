@@ -90,7 +90,7 @@ class HashMap:
         new_map = HashMap(new_capacity, self._hash_function)
 
         for bucket in range(old_buckets.length()):
-            if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone is True:
+            if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
                 continue
             else:
                 new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)

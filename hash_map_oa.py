@@ -90,7 +90,7 @@ class HashMap:
         new_map = HashMap(new_capacity, self._hash_function)
 
         for bucket in range(old_buckets.length()):
-            if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
+            if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone is True:
                 continue
             else:
                 new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)
@@ -119,9 +119,7 @@ class HashMap:
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
                 self._buckets[bucket].is_tombstone = True
-        self._size -= 1
-
-
+                self._size -= 1
 
     def clear(self) -> None:
         new_map = HashMap(self._capacity, self._hash_function)

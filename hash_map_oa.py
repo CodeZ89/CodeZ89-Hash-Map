@@ -96,7 +96,7 @@ class HashMap:
                 new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)
 
         self._buckets = new_map._buckets
-        self._capacity = new_capacity
+        self._capacity = new_map._capacity
 
     def get(self, key: str) -> object:
         for bucket in range(self._buckets.length()):

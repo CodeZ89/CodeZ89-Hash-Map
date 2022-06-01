@@ -53,8 +53,10 @@ class HashMap:
 
     def put(self, key: str, value: object) -> None:
 
-        if self.table_load() >= 0.5:
+        while self.table_load() >= 0.5:
             self.resize_table(self._capacity * 2)
+
+
         bucket_index = self._hash_function(key) % self._capacity
         new_index = self._hash_function(key) % self._capacity
         placer = self._buckets[bucket_index]

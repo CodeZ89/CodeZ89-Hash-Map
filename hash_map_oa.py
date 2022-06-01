@@ -119,7 +119,7 @@ class HashMap:
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
                 self._buckets[bucket].is_tombstone = True
-
+        self._size -= 1
 
 
 

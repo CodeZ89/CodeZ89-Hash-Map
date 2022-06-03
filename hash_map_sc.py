@@ -1,9 +1,15 @@
-# Name:
-# OSU Email:
+# Name: Zach Chaloner
+# OSU Email: chalonez@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 6
+# Due Date:06/03/2022
+# Description: This program is the implementation of the Hash Map data structure using chaining
+#              for collision resolution. The HashMap is initialized as a dynamic array of empty
+#              singly linked lists and contains methods to add, remove, and adjust items depending
+#              on input from the user. A separate function is included outside of the HashMap class,
+#              find_mode, that allows a user to find the mode (most occurring) value of a dynamic array.
+#              The find_mode function utilizes the HashMap data structure for storage and keeping track
+#              of occurrences of the values in the dynamic array.
 
 
 from a6_include import (DynamicArray, LinkedList,
@@ -52,41 +58,76 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
-        bucket_index = self._hash_function(key) % self._capacity
+        """
+        Method that places a key value pair in the HashMap. The function utilizes the given
+        hash function to determine where the key/value pair is to be placed in the map. If the
+        key already exists in the map, the key is maintained but the value of the key is changed
+        to the value that is input into the function. If the key is not present, the key/value pair
+        is added to the HashMap. Takes two parameters, key - a string to be used in the hash function,
+        and the value that is associated with that key.
+        """
+        bucket_index = self._hash_function(key) % self._capacity    # determine DA index to place key/value pair
         new_bucket = self._buckets[bucket_index]
-        check_contains = new_bucket.contains(key)
+        check_contains = new_bucket.contains(key)                   # determine if a key is present in the SLL
 
         if check_contains:
-            check_contains.value = value
+            check_contains.value = value                            # replace value if key is already present in map
         else:
-            self._buckets[bucket_index].insert(key, value)
-            self._size += 1
+            self._buckets[bucket_index].insert(key, value)          # otherwise add key/value pair to corresponding
+            self._size += 1                                         # SLL in the map
 
     def empty_buckets(self) -> int:
-        num_empty = 0
+        """
+        Method that determines the amount of empty buckets that are left in the
+        HashMap. Takes no parameters, returns the integer value of empty buckets
+        in the map.
+        """
+        num_empty = 0                   # initialize count
+
+        # iterate through the map, increase count if a bucket is empty
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket].length() == 0:
                 num_empty += 1
         return num_empty
 
     def table_load(self) -> float:
+        """
+        Method that determines the current table load given by the equation:
+        table load = current # of elements in the HashMap / current capacity of the HashMap.
+        Takes no parameters, returns a floating point value of the current table load.
+        """
         return self._size / self._capacity
 
     def clear(self) -> None:
+        """
+        Method that clears the current HashMap. It does not take any parameters and does not change
+        the underlying capacity of the current map.
+        """
+        # iterate through current table, if an index contains any key/value pairs
+        # initialize an empty linked list to replace the current SLL
         for bucket in range(self._buckets.length()):
             if self._buckets[bucket].length() != 0:
                 self._buckets[bucket] = LinkedList()
         self._size = 0
 
     def resize_table(self, new_capacity: int) -> None:
+        """
+        Method that resizes the current hash table based on the input parameter, new_capacity.
+        If the new capacity is less than 1, the method does nothing. Otherwise the method resizes
+        the current hash table and rehashes the existing values. All existing key/value pairs are
+        rehashed into the new map utilizing the given hash_function. Takes one parameter new_capacity.
+        """
         if new_capacity < 1:
             return
 
         old_map = self._buckets
 
+        # create new HashMap to rehash values of the current map with the new capacity
         new_map = HashMap(new_capacity, self._hash_function)
 
+        # iterate through the old hash table, rehash values if SLL is not empty
         for bucket in range(old_map.length()):
+            # if bucket contains a SLL with key/value pairs, iterate through and rehash as necessary
             if old_map[bucket].length() != 0:
                 iterator = old_map[bucket].__iter__()
                 current_node = iterator.__next__()
@@ -94,23 +135,34 @@ class HashMap:
                     new_map.put(current_node.key, current_node.value)
                     current_node = current_node.next
 
+        # set values of the original HashMap to the rehashed values with the new capacity
         self._buckets = new_map._buckets
         self._capacity = new_capacity
 
 
 
     def get(self, key: str) -> object:
-        bucket_index = self._hash_function(key) % self._capacity
+        """
+        Method that returns the value of a given key. Takes one parameter the key
+        that is being searched for. If the key is not present in the hash table,
+        the method returns None.
+        """
+        bucket_index = self._hash_function(key) % self._capacity    # find index of given key
         target = self._buckets[bucket_index].contains(key)
-        if target:
+        if target:                                                  # if key is in the table
             return target.value
         else:
             return None
 
 
     def contains_key(self, key: str) -> bool:
-        bucket_index = self._hash_function(key) % self._capacity
-        target = self._buckets[bucket_index].contains(key)
+        """
+        Method that determines if the current hash table contains a given key. The given key
+        is run through the hash function, if it is present the method returns true, if it is
+        not present it returns false.
+        """
+        bucket_index = self._hash_function(key) % self._capacity    # determine index of given key
+        target = self._buckets[bucket_index].contains(key)          # determine if SLL contains given key
 
         if target:
             return True
@@ -118,6 +170,12 @@ class HashMap:
             return False
 
     def remove(self, key: str) -> None:
+        """
+        Method that removes a key/value pair from the hash table. Takes one parameter
+        the key to be removed. If the key is not found, the method does nothing. If the
+        key is found, the key/value pair is removed and the size of the hash table is
+        decremented.
+        """
         bucket_index = self._hash_function(key) % self._capacity
         target = self._buckets[bucket_index].contains(key)
 
@@ -129,49 +187,64 @@ class HashMap:
 
 
     def get_keys(self) -> DynamicArray:
+        """
+        Method that returns a dynamic array with all the keys stored in the current hash map.
+        Does not take any parameters.
+        """
 
         key_array = DynamicArray()
 
         for bucket in range(self._buckets.length()):
+            # if a bucket is not empty, append all keys to the new DA
             if self._buckets[bucket].length() != 0:
-                iterator = self._buckets[bucket].__iter__()
+                iterator = self._buckets[bucket].__iter__()             # initialize iterator
                 current_node = iterator.__next__()
                 while current_node is not None:
-                    key_array.append(current_node.key)
+                    key_array.append(current_node.key)                  # append key to DA
                     current_node = current_node.next
         return key_array
 
 
 def find_mode(da: DynamicArray) -> (DynamicArray, int):
+    """
+    Function outside of the HashMap class that finds the mode of a given dynamic array.
+    The function utilizes the HashMap class to store the objects of the dynamic array
+    with the object being the key and the value being the number of occurrences of that
+    object in the original dynamic array. Takes one parameter, a dynamic array. Returns a tuple
+    of a dynamic array containing the most occurring value(s)  and the count of how many
+    times they occurred.
+    """
 
     map = HashMap(da.length() // 3, hash_function_1)
-    mode_array = DynamicArray()
-    count = 0
+    mode_array = DynamicArray()                         # new dynamic array that will contain mode value(s)
+    count = 0                                           # initialize mode count
 
+    # iterate through DA, determine the count of each object in the array
     for index in range(da.length()):
+        # if value has already been seen, increment value
         if map.contains_key(da[index]):
             map.put(da[index], map.get(da[index]) + 1)
+            # if current object matches the current mode, append current object to mode_array
             if count == map.get(da[index]):
                 mode_array.append(da[index])
+            # if current object has been seen more than current mode, create new DA with current object
+            # increment the count
             elif count < map.get(da[index]) + 1:
                 mode_array = DynamicArray()
                 mode_array.append(da[index])
                 count += 1
         else:
+            # if a value has not been seen, place it in the hash map
             map.put(da[index], 1)
+            # if mode_array is empty, put first value in the array, increment count
             if mode_array.length() == 0:
                 mode_array.append(da[index])
                 count += 1
+            # if the current mode count is 1, append the new value to the mode array
             elif count == 1:
                 mode_array.append(da[index])
 
     return mode_array, count
-
-
-
-
-
-
 
 # ------------------- BASIC TESTING ---------------------------------------- #
 

@@ -147,7 +147,7 @@ class HashMap:
     def get(self, key: str) -> object:
         """
         Method that takes a key as a parameter and returns the value that is associated with the given
-        key.
+        key. Method quadratically probes to find the key in the hash map.
         """
 
         bucket_index = self._hash_function(key) % self._capacity  # index of hash of current key
@@ -164,11 +164,17 @@ class HashMap:
                     return placer.value
             # if spot is not empty, continue to probe
             new_spot += 1
+            # maintain original index, utilize new index value to go to the next probe index
             new_index = (bucket_index + new_spot ** 2) % self._capacity
             placer = self._buckets[new_index]
 
 
     def contains_key(self, key: str) -> bool:
+        """
+        Method that determines if a given key is present in the hash table. Quadratically probes
+        using the given key to find an initial value in the hash table. Returns True if the key
+        is present in the table, returns False if the key is present or if they key is a tombstone
+        """
         bucket_index = self._hash_function(key) % self._capacity  # index of hash of current key
         placer = self._buckets[bucket_index]  # set placer to key at bucket index
         new_spot = 0  # used for quadratic probing
@@ -189,6 +195,12 @@ class HashMap:
         return False
 
     def remove(self, key: str) -> None:
+        """
+        Method that removes a key/value pair from the hash table. Quadratically probes the table starting
+        at the index determined by putting the key through the hash function. If a given key is already
+        marked as a tombstone, the method will do nothing. Otherwise, if the key is found, the object
+        at the given key is marked as a tombstone (is_tombstone = True). They key/value are unchanged.
+        """
         bucket_index = self._hash_function(key) % self._capacity  # index of hash of current key
         placer = self._buckets[bucket_index]  # set placer to key at bucket index
         new_spot = 0  # used for quadratic probing
@@ -197,9 +209,11 @@ class HashMap:
         while placer:
             # while probing, if the key to be placed matches an existing key, replace existing keys value
             if placer.key == key:
+                # if key is already a tombstone, exit
                 if placer.is_tombstone:
                     return
                 else:
+                    # make object a tombstone - decrement size of hash map
                     placer.is_tombstone = True
                     self._size -= 1
                     return
@@ -210,13 +224,22 @@ class HashMap:
 
 
     def clear(self) -> None:
-        new_map = HashMap(self._capacity, self._hash_function)
-        self._buckets = new_map._buckets
-        self._size = 0
+        """
+        Method that clears the contents of the hash table. Takes no parameters.
+        """
+        new_map = HashMap(self._capacity, self._hash_function)  # create new hash table with same capacity
+        self._buckets = new_map._buckets                        # clear buckets of the old hash table
+        self._size = 0                                          # reset size of hash table
 
     def get_keys(self) -> DynamicArray:
+        """
+        Method that returns a Dynamic Array that is populated with the keys that are present
+        in the current hash table. Takes no parameters.
+        """
         key_array = DynamicArray()
+        # iterate through hash table, append keys to the new array
         for bucket in range(self._buckets.length()):
+            # skip over tombstones
             if self._buckets[bucket] is not None and not self._buckets[bucket].is_tombstone:
                 key_array.append(self._buckets[bucket].key)
 

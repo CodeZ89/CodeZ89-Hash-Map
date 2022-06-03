@@ -1,9 +1,17 @@
-# Name:
-# OSU Email:
+# Name: Zach Chaloner
+# OSU Email: chalonez@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 6
+# Due Date: 06/03/2022
+# Description: This program is an implementation of a hash map that utilizes open addressing for
+#              collision resolution. The methods included in this program are put - to add a key/value
+#              pair to the current map, table load - to determine the current load on the hash table,
+#              empty buckets - to determine the number of empty buckets in the current hash table,
+#              resize table - to resize the hash table as needed, get - to get the value of a given key
+#              in the table, contains key - to determine if a given key is present in the hash table,
+#              remove - to remove a key/value pair from the hash table, clear - to clear the current table,
+#              and get keys - to get all of the existing keys in the hash table. Functionality of the methods
+#              is described in details in their individual doc-strings below.
 
 
 from a6_include import (DynamicArray, HashEntry,
@@ -52,77 +60,152 @@ class HashMap:
     # ------------------------------------------------------------------ #
 
     def put(self, key: str, value: object) -> None:
+        """
+        Method that updates the key/value pair in the hash map. If the given key already exists, the
+        current key's value is replaced with the given value. If the key is not present in the current
+        hash table, they key/value pair is added. To deal with collisions, the method utilizes quadratic
+        probing to find an empty spot that a key/value pair can be added, if the index that is associated
+        with a current key is currently full. At any point, if the table load is greater than or equal to
+        0.5, the hash table will be resized and the current key/value pairs will be rehashed into the new
+        table. Takes 2 parameters, key to be added to the table and its associated value.
+        """
 
+        # check table load, resize if greater than or equal to 0.5
         if self.table_load() >= 0.5:
-            self.resize_table(self._capacity * 2)
+            self.resize_table(self._capacity * 2)                   # resize to 2x current capacity
 
-        bucket_index = self._hash_function(key) % self._capacity
-        new_index = self._hash_function(key) % self._capacity
-        placer = self._buckets[bucket_index]
-        new_spot = 0
+        bucket_index = self._hash_function(key) % self._capacity    # index of hash of current key
+        new_index = self._hash_function(key) % self._capacity       # new index if index already contains key/value pair
+        placer = self._buckets[bucket_index]                        # set placer to key at bucket index
+        new_spot = 0                                                # used for quadratic probing
 
+        # if placer is not None, probe to an empty spot in the table
         while placer:
+            # account for removed values by checking if the current placer is a tombstone
+            # if a tombstone is found, replace the the tombstone with the new key/value
             if placer.is_tombstone:
-                break
+                placer.key = key
+                placer.value = value
+                placer.is_tombstone = False         #reset tombstone to False
+                return
+            # while probing, if the key to be placed matches an existing key, replace existing keys value
             if placer.key == key:
                 placer.value = value
                 return
+            # if spot is not empty, continue to probe
             new_spot += 1
             new_index = (bucket_index + new_spot**2) % self._capacity
             placer = self._buckets[new_index]
 
+        # reaches here when there is an empty spot, adds key/value to the table
         self._buckets[new_index] = HashEntry(key, value)
         self._size += 1
 
 
     def table_load(self) -> float:
+        """
+        Method that returns a floating point value of the current table load. Takes no parameters.
+        """
         return self._size / self._capacity
 
     def empty_buckets(self) -> int:
+        """
+        Method that returns the current integer amount of empty buckets in the hash table.
+        Key/value pairs that are tombstones are not considered empty.
+        """
         return self._capacity - self._size
 
     def resize_table(self, new_capacity: int) -> None:
+        """
+        Method to resize the current hash table by changing its current capacity to the given new_capacity.
+        All existing key/value pairs remain in the new hash table and are rehashed according to the new
+        capacity. If the new_capacity parameter is less than 1 or it is less than the current number of
+        elements in the hash table, the method does nothing. During resizing, if a key/value pair is found
+        to be a tombstone, it is not carried over to the new table.
+        """
         if new_capacity < 1 or new_capacity < self._size:
             return
 
-        old_buckets = self._buckets
+        old_buckets = self._buckets                             # maintain the current buckets in the hash table
 
-        new_map = HashMap(new_capacity, self._hash_function)
-
+        new_map = HashMap(new_capacity, self._hash_function)    # create new hash map that will store the rehashed
+                                                                # values.
+        # iterate through the current buckets
         for bucket in range(old_buckets.length()):
+            # skip over a bucket if it is empty or the key/value pair present is a tombstone
             if old_buckets[bucket] is None or old_buckets[bucket].is_tombstone:
                 continue
             else:
+                # rehash values into the new map accordingly
                 new_map.put(old_buckets[bucket].key, old_buckets[bucket].value)
 
+        # set current hash map buckets and capacity to the rehashed buckets based on the new capacity
         self._buckets = new_map._buckets
         self._capacity = new_map._capacity
 
     def get(self, key: str) -> object:
-        for bucket in range(self._buckets.length()):
-            if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
-                if self._buckets[bucket].is_tombstone:
-                    return
+        """
+        Method that takes a key as a parameter and returns the value that is associated with the given
+        key.
+        """
+
+        bucket_index = self._hash_function(key) % self._capacity  # index of hash of current key
+        placer = self._buckets[bucket_index]  # set placer to key at bucket index
+        new_spot = 0  # used for quadratic probing
+
+        # if placer is not None, probe to an empty spot in the table
+        while placer:
+            # while probing, if the key to be placed matches an existing key, replace existing keys value
+            if placer.key == key:
+                if placer.is_tombstone:
+                    return None
                 else:
-                    return self._buckets[bucket].value
+                    return placer.value
+            # if spot is not empty, continue to probe
+            new_spot += 1
+            new_index = (bucket_index + new_spot ** 2) % self._capacity
+            placer = self._buckets[new_index]
 
 
     def contains_key(self, key: str) -> bool:
-        for bucket in range(self._buckets.length()):
-            bucket_key = self._buckets[bucket]
-            if bucket_key is not None and bucket_key.key == key:
-                return True
+        bucket_index = self._hash_function(key) % self._capacity  # index of hash of current key
+        placer = self._buckets[bucket_index]  # set placer to key at bucket index
+        new_spot = 0  # used for quadratic probing
+
+        # if placer is not None, probe to an empty spot in the table
+        while placer:
+            # while probing, if the key to be placed matches an existing key, replace existing keys value
+            if placer.key == key:
+                if placer.is_tombstone:
+                    return False
+                else:
+                    return True
+            # if spot is not empty, continue to probe
+            new_spot += 1
+            new_index = (bucket_index + new_spot ** 2) % self._capacity
+            placer = self._buckets[new_index]
 
         return False
 
     def remove(self, key: str) -> None:
-        for bucket in range(self._buckets.length()):
-            if self._buckets[bucket] is not None and self._buckets[bucket].key == key:
-                if self._buckets[bucket].is_tombstone:
-                    break
+        bucket_index = self._hash_function(key) % self._capacity  # index of hash of current key
+        placer = self._buckets[bucket_index]  # set placer to key at bucket index
+        new_spot = 0  # used for quadratic probing
+
+        # if placer is not None, probe to an empty spot in the table
+        while placer:
+            # while probing, if the key to be placed matches an existing key, replace existing keys value
+            if placer.key == key:
+                if placer.is_tombstone:
+                    return
                 else:
-                    self._buckets[bucket].is_tombstone = True
+                    placer.is_tombstone = True
                     self._size -= 1
+            # if spot is not empty, continue to probe
+            new_spot += 1
+            new_index = (bucket_index + new_spot ** 2) % self._capacity
+            placer = self._buckets[new_index]
+
 
     def clear(self) -> None:
         new_map = HashMap(self._capacity, self._hash_function)

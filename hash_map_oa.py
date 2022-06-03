@@ -87,6 +87,7 @@ class HashMap:
                 placer.key = key
                 placer.value = value
                 placer.is_tombstone = False         #reset tombstone to False
+                self._size += 1
                 return
             # while probing, if the key to be placed matches an existing key, replace existing keys value
             if placer.key == key:

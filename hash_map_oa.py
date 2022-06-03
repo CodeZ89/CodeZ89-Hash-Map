@@ -201,6 +201,7 @@ class HashMap:
                 else:
                     placer.is_tombstone = True
                     self._size -= 1
+                    return
             # if spot is not empty, continue to probe
             new_spot += 1
             new_index = (bucket_index + new_spot ** 2) % self._capacity

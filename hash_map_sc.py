@@ -143,12 +143,34 @@ class HashMap:
 
 
 def find_mode(da: DynamicArray) -> (DynamicArray, int):
-    """
-    TODO: Write this implementation
-    """
-    # if you'd like to use a hash map,
-    # use this instance of your Separate Chaining HashMap
+
     map = HashMap(da.length() // 3, hash_function_1)
+    mode_array = DynamicArray()
+    count = 0
+
+    for index in range(da.length()):
+        if map.contains_key(da[index]):
+            map.put(da[index], map.get(da[index]) + 1)
+            if count == map.get(da[index]):
+                mode_array.append(da[index])
+            elif count < map.get(da[index]) + 1:
+                mode_array = DynamicArray()
+                mode_array.append(da[index])
+                count += 1
+        else:
+            map.put(da[index], 1)
+            if mode_array.length() == 0:
+                mode_array.append(da[index])
+                count += 1
+            elif count == 1:
+                mode_array.append(da[index])
+
+    return mode_array, count
+
+
+
+
+
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #

@@ -1,8 +1,3 @@
-# Name: Zach Chaloner
-# OSU Email: chalonez@oregonstate.edu
-# Course: CS261 - Data Structures
-# Assignment: 6
-# Due Date: 06/03/2022
 # Description: This program is an implementation of a hash map that utilizes open addressing for
 #              collision resolution. The methods included in this program are put - to add a key/value
 #              pair to the current map, table load - to determine the current load on the hash table,
@@ -23,7 +18,6 @@ class HashMap:
         """
         Initialize new HashMap that uses
         quadratic probing for collision resolution
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         self._buckets = DynamicArray()
         for _ in range(capacity):
@@ -36,7 +30,6 @@ class HashMap:
     def __str__(self) -> str:
         """
         Override string method to provide more readable output
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         out = ''
         for i in range(self._buckets.length()):
@@ -46,14 +39,12 @@ class HashMap:
     def get_size(self) -> int:
         """
         Return size of map
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         return self._size
 
     def get_capacity(self) -> int:
         """
         Return capacity of map
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         return self._capacity
 
@@ -130,7 +121,7 @@ class HashMap:
         old_buckets = self._buckets                             # maintain the current buckets in the hash table
 
         new_map = HashMap(new_capacity, self._hash_function)    # create new hash map that will store the rehashed
-                                                                # values.
+                                                                # values
         # iterate through the current buckets
         for bucket in range(old_buckets.length()):
             # skip over a bucket if it is empty or the key/value pair present is a tombstone

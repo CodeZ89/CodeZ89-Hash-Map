@@ -1,10 +1,4 @@
-# Course:      CS261 - Data Structures
-# Assignment:  6
-# Description: Provided data structures necessary to complete the assignment.
-#              Please look through this file carefully to see what methods
-#              are available and how they're implemented.
-#              Don't modify the contents of this file.
-
+# Data structures used by open addressing hash map and separate chaining for collision resolution
 
 # -------------- Used by both HashMaps (SC & OA)  -------------- #
 
@@ -34,6 +28,8 @@ class DynamicArray:
         min(da)                 # will not work
         max(da)                 # will not work
         sort(da)                # will not work
+
+        Used for testing to maintain basic data structure
         """
         return None
 

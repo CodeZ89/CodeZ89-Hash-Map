@@ -1,8 +1,3 @@
-# Name: Zach Chaloner
-# OSU Email: chalonez@oregonstate.edu
-# Course: CS261 - Data Structures
-# Assignment: 6
-# Due Date:06/03/2022
 # Description: This program is the implementation of the Hash Map data structure using chaining
 #              for collision resolution. The HashMap is initialized as a dynamic array of empty
 #              singly linked lists and contains methods to add, remove, and adjust items depending
@@ -21,7 +16,6 @@ class HashMap:
         """
         Initialize new HashMap that uses
         separate chaining for collision resolution
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         self._buckets = DynamicArray()
         for _ in range(capacity):
@@ -34,7 +28,6 @@ class HashMap:
     def __str__(self) -> str:
         """
         Override string method to provide more readable output
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         out = ''
         for i in range(self._buckets.length()):
@@ -44,14 +37,12 @@ class HashMap:
     def get_size(self) -> int:
         """
         Return size of map
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         return self._size
 
     def get_capacity(self) -> int:
         """
         Return capacity of map
-        DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         return self._capacity
 
